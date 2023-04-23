@@ -1,16 +1,22 @@
+#' Almond yield anomalies
 #'
-#' @param  
-#' @param  
-#' @param  
-#' @param 
+#' A function that computes almond yield anomalies for years in a dataframe, converting daily information on minimum temperatures and precipitation to monthly information and using these in an equation with set numerical parameters by default.
 #'
-#' @return
+#' @param clim_data A character string end in .txt referring to climate data with variables for daily minimum temperature in degrees Celsius (named tmin_c) and daily precipitation in mm (named precip), with corresponding month and year columns (named month and wy). This should be stored in the working directory in a folder called data. By default, this will search for "clim.txt."
+#' @param a A number corresponding to the almond yield anomaly parameter that is multiplied by the minimum minimum temperature of the second month of the year.
+#' @param b A number corresponding to the almond yield anomaly parameter that is multiplied by the minimum minimum temperature of the second month of the year, squared.
+#' @param c A number corresponding to the almond yield anomaly parameter that is multiplied by the sum of the precipitation of the first month of the year.
+#' @param d A number corresponding to the almond yield anomaly parameter that is multiplied by the sum of the precipitation of the first month of the year, squared.
+#' @param e A number that is added to all of the other parts of the almond yield anomaly equation.
+#'
+#' @return The minimum, maximum, and mean almond yield anomalies across all years of the dataframe
 #' @export
 #'
 #' @examples
-#' 
-#' 
+#' calc_almond_yield_anomaly() # this will run it with all of the defaults
+#' calc_almond_yield_anomaly(clim_data = "climate.txt") # for example, running the function if your file is named differently
 
+# read in necessary libraries
 library(here)
 library(tidyverse)
 
@@ -19,15 +25,14 @@ calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0
   
   clim_df_prepped <- clim_df %>%
     group_by(month, wy) %>% # group by month and water year
-    summarize(max_tmax_c = max(tmax_c), # get max of max temps for the month of year (not used for almonds)
-              min_tmin_c = min(tmin_c), # get min of min temps for the month of year
+    summarize(min_tmin_c = min(tmin_c), # get min of min temps for the month of year
               sum_precip = sum(precip)) # get sum of precip for the month of year
   
   years <- sort(unlist(unique(clim_df_prepped$wy))) # get an ordered list of years for the loop
   
   yield_list <- c() # initialize list to hold yield anomalies by year
   
-  for (i in seq_along(years)) {
+  for (i in seq_along(years)) { # for each year in the df
     clim_df_prepped_filtered <- clim_df_prepped %>%
       filter(wy == years[[i]]) # filter df to year at hand
     
@@ -37,7 +42,7 @@ calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0
     
     Y <- (a * min_T_2) + (b * (min_T_2^2)) + (c * precip_1) + (d * (precip_1^2)) + e # calculate yield anomaly with formula
     
-    yield_list <- append(yield_list, Y) # add value to list
+    yield_list <- append(yield_list, Y) # add resulting value to list, and continue to next year if one exists
   }
   
   return(c(min_yield_anomaly = min(yield_list),
