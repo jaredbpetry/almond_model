@@ -2,7 +2,7 @@
 #'
 #' A function that computes almond yield anomalies for years in a dataframe, converting daily information on minimum temperatures and precipitation to monthly information and using these in an equation with set numerical parameters by default.
 #'
-#' @param clim_data A character string end in .txt referring to climate data with variables for daily minimum temperature in degrees Celsius (named tmin_c) and daily precipitation in mm (named precip), with corresponding month and year columns (named month and wy). This should be stored in the working directory in a folder called data. By default, this will search for "clim.txt."
+#' @param clim_data A character string ending in .txt referring to climate data with variables for daily minimum temperature in degrees Celsius (named tmin_c) and daily precipitation in mm (named precip), with corresponding month and year columns (named month and wy). This should be stored in the working directory in a folder called data. By default, this will search for "clim.txt."
 #' @param a A number corresponding to the almond yield anomaly parameter that is multiplied by the minimum minimum temperature of the second month of the year.
 #' @param b A number corresponding to the almond yield anomaly parameter that is multiplied by the minimum minimum temperature of the second month of the year, squared.
 #' @param c A number corresponding to the almond yield anomaly parameter that is multiplied by the sum of the precipitation of the first month of the year.
