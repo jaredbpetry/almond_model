@@ -32,7 +32,7 @@ calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0
     clim_df_prepped_filtered <- clim_df_prepped %>%
       filter(year == years[[i]]) # filter df to year at hand
     
-    min_T_2 <- clim_df_prepped_filtered$mean_tmin_c[[2]] # get min_T_2 (min temp from month 2)
+    min_T_2 <- clim_df_prepped_filtered$min_tmin_c[[2]] # get min_T_2 (min temp from month 2)
 
     precip_1 <- clim_df_prepped_filtered$sum_precip[[1]] # get precip_1 (precip from month 1)
     
