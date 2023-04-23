@@ -1,0 +1,10 @@
+```{r}
+# Read in almond yield anomoly function
+source("calc_almond_yield_anomaly.R")
+```
+
+```{r}
+# Test it on clim.txt (this is the default file name, so no need to pass anything to the function)
+calc_almond_yield_anomaly()
+```
+

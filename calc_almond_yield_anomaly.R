@@ -15,7 +15,7 @@ library(here)
 library(tidyverse)
 
 calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0.0046, c = -0.07, d = 0.0043, e = 0.28) {
-  clim_df <- read.table(here(paste0("data/", "clim.txt")), header = TRUE) # clim_data
+  clim_df <- read.table(here(paste0("data/", clim_data)), header = TRUE) # clim_data
   
   clim_df_prepped <- clim_df %>%
     group_by(month, year) %>%
@@ -31,7 +31,6 @@ calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0
   for (i in seq_along(years)) {
     clim_df_prepped_filtered <- clim_df_prepped %>%
       filter(year == years[[i]]) # filter df to year at hand
-    message(paste("on year", years[[i]]))
     
     min_T_2 <- clim_df_prepped_filtered$mean_tmin_c[[2]] # get min_T_2 (min temp from month 2)
 
