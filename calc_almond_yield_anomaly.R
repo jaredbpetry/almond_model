@@ -19,8 +19,8 @@ calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0
   
   clim_df_prepped <- clim_df %>%
     group_by(month, year) %>%
-    summarize(mean_tmax_c = mean(tmax_c),
-              mean_tmin_c = mean(tmin_c),
+    summarize(max_tmax_c = max(tmax_c),
+              min_tmin_c = min(tmin_c),
               sum_precip = sum(precip))
   
   years <- sort(unlist(unique(clim_df_prepped$year)))
