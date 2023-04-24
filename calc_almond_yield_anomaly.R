@@ -24,7 +24,7 @@ calc_almond_yield_anomaly <- function(clim_data = "clim.txt", a = -0.015, b = -0
   clim_df <- read.table(here(paste0("data/", clim_data)), header = TRUE) # read in the climate data
   
   clim_df_prepped <- clim_df %>%
-    group_by(month, wy) %>% # group by month and water year
+    group_by(month, wy) %>% # group by month and water year; use water year because 1988 only has months 10,11,12 and need to exclude 1988 from years anyway
     summarize(min_tmin_c = min(tmin_c), # get min of min temps for the month of year
               sum_precip = sum(precip)) # get sum of precip for the month of year
   
