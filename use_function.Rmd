@@ -1,10 +1,25 @@
-```{r}
-# Read in almond yield anomoly function
+---
+title: 'EDS 230 Assignment 2: Almond Yield Model Implementation'
+author: "Erika Egg and Jared Petry"
+date: "2023-04-25"
+output:
+  pdf_document: default
+  html_document: default
+---
+## Our model diagram image:
+![Almond Yield Model Diagram](almond_model_diagram.png)
+
+## Implementing our function:
+
+```{r, message = FALSE}
+# Read in almond yield anomaly function
 source("calc_almond_yield_anomaly.R")
 ```
 
 ```{r}
 # Test it on clim.txt (this is the default file name, so no need to pass anything to the function)
 calc_almond_yield_anomaly()
+
+# We get the desired outputs for min, max, mean
 ```
 
