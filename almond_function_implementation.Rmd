@@ -7,7 +7,7 @@ output:
   html_document: default
 ---
 ## Our model diagram image:
-![Almond Yield Model Diagram](almond_model_diagram.png)
+![Almond Yield Model Diagram](diagram.png)
 
 ## Implementing our function:
 
@@ -18,6 +18,7 @@ source("calc_almond_yield_anomaly.R")
 
 ```{r}
 # Test it on clim.txt (this is the default file name, so no need to pass anything to the function)
+# This will grab max, min, mean almond yield anomalies for 1989-2010 (the time period of clim.txt)
 calc_almond_yield_anomaly()
 
 # We get the desired outputs for min, max, mean
