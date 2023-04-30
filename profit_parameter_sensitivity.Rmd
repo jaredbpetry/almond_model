@@ -1,0 +1,54 @@
+---
+title: 'EDS 230 Assignment 3: Informal Sensitivity Analysis'
+author: "Erika Egg and Jared Petry"
+date: "2023-05-02"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+**This is an informal sensitivity analysis for the two parameters in our profit model: selling_price and production_cost**
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Load Libraries
+```{r}
+library(here)
+library(tidyverse)
+library(purrr) 
+library(ggplot2) 
+library(ggpubr) 
+```
+
+Source necessary functions
+```{r}
+# source necessary functions
+source("calc_almond_yield_anomaly.R")
+source("profit_model.R")
+```
+
+Run both models to make sure sourcing worked: 
+```{r message=FALSE}
+calc_almond_yield_anomaly() 
+profit_model()
+```
+
+### Sensitivity Analysis with parameter: "selling_price"
+```{r}
+# Create a sampling distribution for the selling_price parameter that makes sense in context
+sellprice_sample <- as.data.frame(rnorm(mean=5000, sd = 1000, n=20)) 
+
+# use purrr:pmap() to run formula across "sellprice_sample"
+# obj <- pmap(.f = profit_model(), 
+#             .l = sellprice_sample) 
+
+sellprice_sample
+```
+
+### Sensitivity Analysis with parameter: "production_cost"
+```{r}
+
+```
+
