@@ -1,6 +1,6 @@
 #' **Almond profit model**
 #'
-#' This general idea of the model is as follows: 
+#' The general idea of the model is as follows: 
 #' The 'yield' function is nested within the 'profit' function.
 #' 
 #' >>> profit = selling_price x yield - production_cost x yield
@@ -30,7 +30,7 @@
 #' 
 #' # VARIABLES - vary per year
 #' 
-#' @param yield_anomaly Calculated from the almond yield anomaly function. The units are tons per acre.
+#' @param yield_anomaly_df$yield_anomaly Calculated from the almond yield anomaly function. The units are tons per acre.
 #' 
 #' @param yield This is calculated based off the almond yield anomaly (tons per acre), the expected yield (tons per acre), and the amount of acres on the almond farm.  The average yield plus or minus the positive or negative yield anomaly will give us the yield for a given (year?).
 #' 
@@ -49,7 +49,7 @@ library(here)
 
 # ---- Call the almond yield function 
 
-source("calc_almond_yield_anomaly.R")
+source("calc_almond_yield_anomalies_all_years.R")
 
 
 # ---- Create the profit function described above
@@ -57,19 +57,27 @@ source("calc_almond_yield_anomaly.R")
 profit_model <- function(selling_price = 5000, production_cost = 4000,  # price and production cost in dollars per ton
                          acres = 200, expected_yield  = 1) {  # expected yield is assumed 1 ton per acre (found USDA survey online)
   
-  # assign the mean_yield_anomaly (from sourced yield anomaly function) to a variable to use in this function
-  mean_yield_anomaly <- calc_almond_yield_anomaly()[[3]]
+  # assign the yield anomalies by years dataframe (from sourced yield anomaly function) to a variable to use in this function
+  yield_anomaly_df <- calc_almond_yield_anomalies_all_years()
   
+  # profit_list_no_anom <- c()
+  profit_list_w_anom <- c()
+  
+  for (i in seq_along(yield_anomaly_df$year)) {
   # calculate yield with ONLY expected yield and  WITHOUT yield_anomaly based on number of acres present (200 assumed)
   yield = expected_yield * acres  # units of yield comes out to tons of almonds produced
   profit_no_anom = selling_price * yield - production_cost * yield
   
   # calculate yield with expected yield and anomaly based on number of acres present (200 assumed)
-  yield = expected_yield * acres + mean_yield_anomaly * acres # units of yield comes out to tons of almonds produced
+  yield = expected_yield * acres + yield_anomaly_df$yield_anomaly[[i]] * acres # units of yield comes out to tons of almonds produced
   profit_w_anom = selling_price * yield - production_cost * yield
   
-  return(print(paste0("The profit without the mean yield anomaly is ", profit_no_anom,
-                      " and the profit with the yield anomaly is ", profit_w_anom)))
+  # profit_list_no_anom <- append(profit_list_no_anom, profit_no_anom)
+  profit_list_w_anom <- append(profit_list_w_anom, profit_w_anom)
+  }
+  
+  return(tibble(year = yield_anomaly_df$year,
+                profit_w_anom = profit_list_w_anom))
   
 }
 
