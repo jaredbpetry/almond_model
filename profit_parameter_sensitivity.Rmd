@@ -97,11 +97,22 @@ p2 = ggplot(mean_profit, aes(production_cost, mean, col = selling_price)) +
   labs(y="Mean Annual Profit ($)", x="Almond Production Cost ($/ton)")
 
 ggarrange(p1, p2)
+ggsave(here("almond_profit_scatterplot.png"))
 
 # extra: extract annual if desired
 tmp = map_df(results,`[`, c("annual")) 
 annual_profit = as.data.frame(tmp$annual$year)
 colnames(annual_profit)="year"
 annual_profit$profit_w_anom = tmp$annual$profit_w_anom
+
+ggplot(annual_profit, aes(as.factor(year), profit_w_anom)) +
+  geom_boxplot() +
+  labs(title = "Almond Profit ($/ton), 1989-2010") +
+  labs(x = "Year",
+       y = "Profit ($/ton)") +
+  theme_minimal()
+ggsave(here("almond_profit_boxplot.png"))
+
+
 ```
 
