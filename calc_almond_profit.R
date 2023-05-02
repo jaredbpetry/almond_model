@@ -38,7 +38,7 @@
 #'
 #' # OUTCOME 
 #' 
-#' @return The profit that is expected from the almond orchard.
+#' @return The profit that is expected from the almond orchard (list of annual and mean).
 
 
 # IMPORT LIBRARIES
@@ -49,16 +49,16 @@ library(here)
 
 # ---- Call the almond yield function 
 
-source("calc_almond_yield_anomalies_all_years.R")
+source("calc_almond_yield_anomaly_for_profit_func.R")
 
 
 # ---- Create the profit function described above
 
-profit_model <- function(selling_price = 5000, production_cost = 4000,  # price and production cost in dollars per ton
+calc_almond_profit <- function(selling_price = 5000, production_cost = 4000,  # price and production cost in dollars per ton
                          acres = 200, expected_yield  = 1) {  # expected yield is assumed 1 ton per acre (found USDA survey online)
   
   # assign the yield anomalies by years dataframe (from sourced yield anomaly function) to a variable to use in this function
-  yield_anomaly_df <- calc_almond_yield_anomalies_all_years()[[1]]
+  yield_anomaly_df <- calc_almond_yield_anomaly_for_profit_func()
   
   # profit_list_no_anom <- c()
   profit_list_w_anom <- c()
@@ -77,9 +77,9 @@ profit_model <- function(selling_price = 5000, production_cost = 4000,  # price 
   }
   
   profit_df <- tibble(year = yield_anomaly_df$year,
-                      profit_w_anom = profit_list_w_anom)
+                      profit_w_anom = profit_list_w_anom) # create df with profits
   
-  return(list(annual = profit_df, mean = mean(profit_df$profit_w_anom)))
+  return(list(annual = profit_df, mean = mean(profit_df$profit_w_anom))) # return list of annual profits and mean profit (relevant for sensitivity analysis)
   
 }
 

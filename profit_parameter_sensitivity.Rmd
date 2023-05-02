@@ -7,13 +7,13 @@ output:
   html_document: default
 ---
 
-**This is an informal sensitivity analysis for the two parameters in our profit model: selling_price and production_cost**
+**This is an informal sensitivity analysis for the two parameters in our profit model: selling_price and production_cost.**
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
-Load Libraries
+## Load libraries
 ```{r}
 library(here)
 library(tidyverse)
@@ -22,97 +22,87 @@ library(ggplot2)
 library(ggpubr) 
 ```
 
-Source necessary functions
+## Source necessary functions
 ```{r}
 # source necessary functions
-source("calc_almond_yield_anomalies_all_years.R")
-source("profit_model.R")
+source("calc_almond_yield_anomaly_for_profit_func.R")
+source("calc_almond_profit.R")
 ```
 
-Run both models to make sure sourcing worked: 
+### Run both models to make sure sourcing worked: 
 ```{r message=FALSE}
-calc_almond_yield_anomaly() 
-profit_model()
+calc_almond_yield_anomaly_for_profit_func() 
+calc_almond_profit()
 ```
 
-### Sensitivity Analysis with parameter: "selling_price"
+## Sensitivity analysis with parameters: "selling_price" and "production_cost"
 ```{r}
-# Create a sampling distribution for the selling_price parameter that makes sense in context
-sellprice_sample <- as.data.frame(rnorm(mean=5000, sd = 1000, n=20)) 
-
-# use purrr:pmap() to run formula across "sellprice_sample"
-# obj <- pmap(.f = profit_model(), 
-#             .l = sellprice_sample) 
-
-sellprice_sample
-```
-
-### Sensitivity Analysis with parameter: "production_cost"
-```{r}
-
-```
-
-
-```{r}
-####### ERIKA'S SENSITIVITY ANALYSIS ATTEMPT #######
-# generate samples for both parameters
+# Create a sampling distribution for both parameters
+# Assume a uniform distribution - we don't know anything about variation
 nsamples = 300
 deviation = 0.15
 
 
-base_sellprice = 5000
+base_sellprice = 5000 # default in profit function
 selling_price = runif(min = base_sellprice-deviation*base_sellprice,
-                         max = base_sellprice+deviation*base_sellprice, 
-                         n = nsamples)
+                      max = base_sellprice+deviation*base_sellprice, 
+                      n = nsamples) # get a sampling distribution length 300
 
-base_prodcost = 4000
+base_prodcost = 4000 # default in profit function
 production_cost = runif(min = base_prodcost-deviation*base_prodcost,
-                         max = base_prodcost+deviation*base_prodcost, 
-                         n = nsamples)
+                        max = base_prodcost+deviation*base_prodcost, 
+                        n = nsamples) # get a sampling distribution length 300
 
 
-params = cbind.data.frame(selling_price, production_cost)
+params = cbind.data.frame(selling_price, production_cost) # combine into one df
 
-# use pmap 
-# takes function name and then names of all parameters that don't change
-results = params %>% pmap(profit_model,
+# Use pmap to acquire results: takes function name and then names of all 
+# parameters that don't change
+results = params %>% pmap(calc_almond_profit,
                           acres = 200,
                           expected_yield = 1)
 
+# Check results
 results[[1]]
 length(results)
 
-# now we can extract results from the list as above
+# Extract results from the list as above
 mean_profit = map_df(results,`[`, c("mean")) 
-# and we can add the parameter values for each run
+
+# Add the parameter values for each run
 mean_profit = cbind.data.frame(mean_profit, params)
 
-# plot - pick on of the 2 parameter as a color
-
+# Plots for means - two versions of same thing
 p1 = ggplot(mean_profit, aes(selling_price, mean, col = production_cost)) + 
   geom_point(cex = 2) +
-  labs(y="Mean Annual Profit ($)", x="Almond Selling Price ($/ton)")
+  labs(title = "Mean Annual Profit vs. Almond Selling Price and Production Cost",
+       y = "Mean Annual Profit ($)",
+       x = "Almond Selling Price ($/ton)",
+       col = "Almond Production Cost ($/ton)")
 p2 = ggplot(mean_profit, aes(production_cost, mean, col = selling_price)) + 
   geom_point(cex = 2) +
-  labs(y="Mean Annual Profit ($)", x="Almond Production Cost ($/ton)")
+  labs(y = "Mean Annual Profit ($)",
+       x = "Almond Production Cost ($/ton)",
+       col = "Almond Selling Price ($/ton)")
 
-ggarrange(p1, p2)
+ggarrange(p1, p2, ncol = 1)
+
 ggsave(here("almond_profit_scatterplot.png"))
 
-# extra: extract annual if desired
-tmp = map_df(results,`[`, c("annual")) 
-annual_profit = as.data.frame(tmp$annual$year)
+# Extract annual information too and plot
+annual_df = map_df(results,`[`, c("annual")) 
+annual_profit = as.data.frame(annual_df$annual$year)
 colnames(annual_profit)="year"
-annual_profit$profit_w_anom = tmp$annual$profit_w_anom
+annual_profit$profit_w_anom = annual_df$annual$profit_w_anom
 
 ggplot(annual_profit, aes(as.factor(year), profit_w_anom)) +
   geom_boxplot() +
-  labs(title = "Almond Profit ($/ton), 1989-2010") +
-  labs(x = "Year",
+  labs(title = "Almond Profit, 1989-2010",
+       x = "Year",
        y = "Profit ($/ton)") +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+
 ggsave(here("almond_profit_boxplot.png"))
-
-
 ```
 

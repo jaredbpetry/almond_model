@@ -20,7 +20,7 @@
 library(here)
 library(tidyverse)
 
-calc_almond_yield_anomalies_all_years <- function(clim_data = "clim.txt", temp_param = -0.015, sq_temp_param = -0.0046, precip_param = -0.07, sq_precip_param = 0.0043, constant = 0.28) {
+calc_almond_yield_anomaly_for_profit_func <- function(clim_data = "clim.txt", temp_param = -0.015, sq_temp_param = -0.0046, precip_param = -0.07, sq_precip_param = 0.0043, constant = 0.28) {
   clim_df <- read.table(here(paste0("data/", clim_data)), header = TRUE) # read in the climate data
   
   clim_df_prepped <- clim_df %>%
@@ -48,5 +48,5 @@ calc_almond_yield_anomalies_all_years <- function(clim_data = "clim.txt", temp_p
   yield_df <- tibble(year = years,
                      yield_anomaly = yield_list) # create a df with years and corresponding anomalies
   
-  return(list(annual = yield_df, mean = mean(yield_df$yield_anomaly))) # return a list with annual yield anomalies and means by year
+  return(yield_df) # return df
 }
