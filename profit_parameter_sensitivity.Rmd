@@ -89,18 +89,16 @@ mean_profit = cbind.data.frame(mean_profit, params)
 
 # plot - pick on of the 2 parameter as a color
 
-p1 = ggplot(mean_elect, aes(selling_price, mean, col = production_cost)) + 
+p1 = ggplot(mean_profit, aes(selling_price, mean, col = production_cost)) + 
   geom_point(cex = 2) +
   labs(y="Mean Annual Profit ($)", x="Almond Selling Price ($/ton)")
-p2 = ggplot(mean_elect, aes(production_cost, mean, col = selling_price)) + 
+p2 = ggplot(mean_profit, aes(production_cost, mean, col = selling_price)) + 
   geom_point(cex = 2) +
   labs(y="Mean Annual Profit ($)", x="Almond Production Cost ($/ton)")
 
 ggarrange(p1, p2)
 
-# what do we learn from this
-
-# extract annual if desired
+# extra: extract annual if desired
 tmp = map_df(results,`[`, c("annual")) 
 annual_profit = as.data.frame(tmp$annual$year)
 colnames(annual_profit)="year"
