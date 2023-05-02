@@ -78,12 +78,14 @@ p1 = ggplot(mean_profit, aes(selling_price, mean, col = production_cost)) +
   labs(title = "Mean Annual Profit vs. Almond Selling Price and Production Cost",
        y = "Mean Annual Profit ($)",
        x = "Almond Selling Price ($/ton)",
-       col = "Almond Production Cost ($/ton)")
+       col = "Almond Production Cost ($/ton)") +
+  scale_y_continuous(labels = scales::comma)
 p2 = ggplot(mean_profit, aes(production_cost, mean, col = selling_price)) + 
   geom_point(cex = 2) +
   labs(y = "Mean Annual Profit ($)",
        x = "Almond Production Cost ($/ton)",
-       col = "Almond Selling Price ($/ton)")
+       col = "Almond Selling Price ($/ton)") +
+  scale_y_continuous(labels = scales::comma)
 
 ggarrange(p1, p2, ncol = 1)
 
@@ -95,13 +97,16 @@ annual_profit = as.data.frame(annual_df$annual$year)
 colnames(annual_profit)="year"
 annual_profit$profit_w_anom = annual_df$annual$profit_w_anom
 
-ggplot(annual_profit, aes(as.factor(year), profit_w_anom)) +
+p3 = ggplot(annual_profit, aes(as.factor(year), profit_w_anom)) +
   geom_boxplot() +
   labs(title = "Almond Profit, 1989-2010",
        x = "Year",
        y = "Profit ($/ton)") +
   theme_minimal() +
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+  scale_y_continuous(labels = scales::comma)
+
+p3
 
 ggsave(here("almond_profit_boxplot.png"))
 ```
