@@ -25,7 +25,7 @@ library(ggpubr)
 Source necessary functions
 ```{r}
 # source necessary functions
-source("calc_almond_yield_anomaly.R")
+source("calc_almond_yield_anomalies_all_years.R")
 source("profit_model.R")
 ```
 
@@ -50,5 +50,60 @@ sellprice_sample
 ### Sensitivity Analysis with parameter: "production_cost"
 ```{r}
 
+```
+
+
+```{r}
+####### ERIKA'S SENSITIVITY ANALYSIS ATTEMPT #######
+# generate samples for both parameters
+nsamples = 300
+deviation = 0.15
+
+
+base_sellprice = 5000
+selling_price = runif(min = base_sellprice-deviation*base_sellprice,
+                         max = base_sellprice+deviation*base_sellprice, 
+                         n = nsamples)
+
+base_prodcost = 4000
+production_cost = runif(min = base_prodcost-deviation*base_prodcost,
+                         max = base_prodcost+deviation*base_prodcost, 
+                         n = nsamples)
+
+
+params = cbind.data.frame(selling_price, production_cost)
+
+# use pmap 
+# takes function name and then names of all parameters that don't change
+results = params %>% pmap(profit_model,
+                          acres = 200,
+                          expected_yield = 1)
+
+results[[1]]
+length(results)
+
+# now we can extract results from the list as above
+mean_profit = map_df(results,`[`, c("mean")) 
+# and we can add the parameter values for each run
+mean_profit = cbind.data.frame(mean_profit, params)
+
+# plot - pick on of the 2 parameter as a color
+
+p1 = ggplot(mean_elect, aes(selling_price, mean, col = production_cost)) + 
+  geom_point(cex = 2) +
+  labs(y="Mean Annual Profit ($)", x="Almond Selling Price ($/ton)")
+p2 = ggplot(mean_elect, aes(production_cost, mean, col = selling_price)) + 
+  geom_point(cex = 2) +
+  labs(y="Mean Annual Profit ($)", x="Almond Production Cost ($/ton)")
+
+ggarrange(p1, p2)
+
+# what do we learn from this
+
+# extract annual if desired
+tmp = map_df(results,`[`, c("annual")) 
+annual_profit = as.data.frame(tmp$annual$year)
+colnames(annual_profit)="year"
+annual_profit$profit_w_anom = tmp$annual$profit_w_anom
 ```
 

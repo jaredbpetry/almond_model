@@ -45,6 +45,8 @@ calc_almond_yield_anomalies_all_years <- function(clim_data = "clim.txt", temp_p
     yield_list <- append(yield_list, Y) # add resulting value to list, and continue to next year if one exists
   }
   
-  return(tibble(year = years,
-                yield_anomaly = yield_list)) # create a df with years and corresponding anomalies
+  yield_df <- tibble(year = years,
+                     yield_anomaly = yield_list) # create a df with years and corresponding anomalies
+  
+  return(list(annual = yield_df, mean = mean(yield_df$yield_anomaly))) # return a list with annual yield anomalies and means by year
 }

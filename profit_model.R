@@ -58,7 +58,7 @@ profit_model <- function(selling_price = 5000, production_cost = 4000,  # price 
                          acres = 200, expected_yield  = 1) {  # expected yield is assumed 1 ton per acre (found USDA survey online)
   
   # assign the yield anomalies by years dataframe (from sourced yield anomaly function) to a variable to use in this function
-  yield_anomaly_df <- calc_almond_yield_anomalies_all_years()
+  yield_anomaly_df <- calc_almond_yield_anomalies_all_years()[[1]]
   
   # profit_list_no_anom <- c()
   profit_list_w_anom <- c()
@@ -76,8 +76,10 @@ profit_model <- function(selling_price = 5000, production_cost = 4000,  # price 
   profit_list_w_anom <- append(profit_list_w_anom, profit_w_anom)
   }
   
-  return(tibble(year = yield_anomaly_df$year,
-                profit_w_anom = profit_list_w_anom))
+  profit_df <- tibble(year = yield_anomaly_df$year,
+                      profit_w_anom = profit_list_w_anom)
+  
+  return(list(annual = profit_df, mean = mean(profit_df$profit_w_anom)))
   
 }
 
